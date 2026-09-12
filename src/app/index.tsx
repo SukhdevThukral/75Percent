@@ -43,7 +43,7 @@ export default function Onboarding(){
     setError(null)
 
     try{
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_GEMINI_KEY`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${process.env.EXPO_PUBLIC_GEMINI_KEY}`, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -65,6 +65,9 @@ export default function Onboarding(){
       })
 
       const data = await response.json()
+      console.log('status:', response.status)
+      console.log('gemini', JSON.stringify(data))
+      console.log('keyloaded:', process.env.EXPO_PUBLIC_GEMINI_KEY?.slice(0,10))
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text
 
       if (!text) throw new Error('No response from Gemini')
@@ -86,53 +89,86 @@ export default function Onboarding(){
 
   return(
     <SafeAreaView style={s.safe}>
-      <ScrollView contentContainerStyle={s.container} showsHorizontalScrollIndicator={false}>
-        <Text style={s.title}>75%</Text>
-        <Text style={s.sub}>Upload your timetable and we'll handle the rest for you</Text>
-        <TouchableOpacity style={s.uploadBox} onPress={pickImg} disabled={loading}>
+      <ScrollView contentContainerStyle={s.container} showsVerticalScrollIndicator={false}>
+
+        <View style={s.topRow}>
+          <View style={s.avatar}>
+            <Text style={s.avatarText}>S</Text>
+          </View>
+          <View>
+            <Text style={s.greeting}>Good morning</Text>
+            <Text style={s.name}>Sukhdev</Text>
+          </View>
+        </View>
+
+        <Text style={s.hero}>Set up your{'\n'}<Text style={s.heroAccent}>Timetable</Text></Text>
+        <Text style={s.sub}>Upload a photo of your timetable and we'lle extract everything automatically :p</Text>
+
+        <TouchableOpacity style={s.uploadCard} onPress={pickImg} disabled={loading} activeOpacity={0.8}>
           {image ? (
-            <Image source={{uri: image}} style={s.preview} resizeMode="contain"/>
-          ) : (
-            <>
-              <Text style={s.uploadText}>📷</Text>
-              <Text style={s.uploadText}>Tap to upload timetable photo</Text>
-              <Text style={s.uploadHint}>Works with photos, screenshots, and PDFs.</Text>
-            </>
+            <Image source={{uri: image}} style={s.preview} resizeMode='contain'/>
+          ): (
+            <View style={s.uploadInner}>
+              <View style={s.uploadIconBox}>
+                <Text style={s.uploadIconText}>📷</Text>
+              </View>
+              <Text style={s.uploadTitle}>Upload Timetable</Text>
+              <Text style={s.uploadHint}>Photo, screenshot, or PDF</Text>
+            </View>
           )}
         </TouchableOpacity>
 
         {loading && (
-          <View style={s.loadingBox}>
-            <ActivityIndicator color='#6366F1' size="large"/>
-            <Text style={s.loadingText}>Parsing your timetable...</Text>
+          <View style={s.stateBox}>
+            <ActivityIndicator color="#6366F1" size="large"/>
+            <Text style={s.stateText}>Reading your timetable....</Text>
           </View>
         )}
 
-        {error && (
-          <View style={s.errorBox}>
-            <Text style={s.errorText}>{error}</Text>
-            <TouchableOpacity onPress={pickImg}>
-              <Text style={s.retryText}>Try again</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        { parsed && !loading && (
-          <View style={s.resultBox}>
-            <Text style={s.resultTitle}>Found {parsed.length} classes ✓</Text>
-            {parsed.map((slot, i) => (
-              <View key={i} style={s.slowRow}>
-                <View style={s.slotLeft}>
-                  <Text style={s.slotSubject}>{slot.subject}</Text>
-                  <Text style={s.slotMeta}>{slot.day} · {slot.time} · {slot.room}</Text>
-                </View>
-              </View>
-            ))}
-            <TouchableOpacity style={s.confirmBtn} onPress={confirm}>
-              <Text style={s.confirmText}>Looks good, lets go →</Text>
-            </TouchableOpacity>
+        {error && !loading && (
+          <View style={s.errorCard}>
+            <Text style={s.errorTitle}>Couldn't read timetable</Text>
+            <Text style={s.errorSub}>{error}</Text>
             <TouchableOpacity style={s.retryBtn} onPress={pickImg}>
-              <Text style={s.retrynBtnText}>Upload different photo</Text>
+              <Text style={s.retryText}>
+                Try again
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {parsed && !loading && (
+          <View style={s.resultSection}>
+            <View style={s.resultHeader}>
+              <Text style={s.resultTitle}>Found {parsed.length} classes</Text>
+              <View style={s.badge}>
+                <Text style={s.badgeText}>✓</Text>
+              </View>
+            </View>
+          
+
+            {parsed.map((slot, i) => {
+              const colors = ['#6366F1', '#F59E0B', '#10B981', '#EF4444', '#8B5CF6', '#EC4899']
+              const color = colors[i % colors.length]
+              return (
+                <View key={i} style={[s.slotCard, {borderLeftColor: color}]}>
+                  <View style={[s.slotDot, {backgroundColor: color}]}/>
+                  <View style={s.slotInfo}>
+                    <Text style={s.slotSubject}>{slot.subject}</Text>
+                    <Text style={s.slotMeta}>{slot.day} · {slot.time}</Text>
+                  </View>
+                  <View style={[s.roomBadge, {backgroundColor: color + '22'}]}>
+                    <Text style={[s.roomText, {color}]}>{slot.room}</Text>
+                  </View>
+                </View>
+              )
+            })}
+
+            <TouchableOpacity style={s.confirmBtn} onPress={confirm} activeOpacity={0.85}>
+              <Text style={s.confirmBtn}>Looks good  → </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={s.reUploadBtn} onPress={pickImg}>
+              <Text style={s.reUploadText}>Upload different</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -143,38 +179,59 @@ export default function Onboarding(){
 
 const s = StyleSheet.create({
   safe: {flex:1, backgroundColor: '#0f0f0f'},
-  container: {padding: 24, paddingTop: 60, paddingBottom: 40},
+  container: {padding: 24, paddingTop: 20, paddingBottom: 60},
 
-  title: {color:'#fff', fontSize: 48, fontWeight: '800', letterSpacing: -2, marginBottom: 8},
-  sub : {color: '#ffffff60', fontSize: 16, marginBottom: 32, lineHeight: 22},
+  topRow: {flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 32},
+  avatar: {width: 44, height: 44, borderRadius: 22, backgroundColor: '#6366F1', alignItems: 'center', justifyContent:'center'},
+  avatarText: {color: '#fff', fontWeight: '800', fontSize: 18},
+  greeting: {color: '#ffffff50', fontSize: 12},
+  name: {color: '#fff', fontSize: 16, fontWeight: '700'},
+  
+  hero: {color: '#fff', fontSize: 36, fontWeight: '800', letterSpacing: -1, lineHeight:44, marginBottom: 12},
+  heroAccent: {color: '#6366F1'},
+  sub: {color: '#ffffff50', fontSize: 14, lineHeight: 20, marginBottom: 28},
 
-  uploadBox: {
-    borderWidth: 1.5, borderColor: '#2a2a2a', borderStyle: 'dashed',
-    borderRadius: 20, padding: 32, alignItems: 'center', justifyContent: 'center',
-    minHeight: 180, marginBottom: 24, backgroundColor: '#161616'
+  uploadCard: {
+    backgroundColor: '#161616', borderRadius: 24, minHeight: 180,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#2a2a2a', marginBottom: 20
   },
 
-  uploadIcon : {fontSize: 36, marginBottom: 12},
-  uploadText: {color: '#fff', fontSize: 15, fontWeight: '600', marginBottom: 6},
-  uploadHint: {color: '#ffffff40', fontSize: 12},
-  preview: {width: '100%', height: 200, borderRadius: 12},
+  uploadInner: {alignItems: 'center', padding: 32, gap: 10},
+  uploadIconBox : {width: 64, height:64, borderRadius: 20, backgroundColor: '#6366F122', alignItems: 'center', justifyContent: 'center', marginBottom: 4},
+  uploadIconText: {fontSize:28},
+  uploadTitle: {color: '#fff', fontSize: 16, fontWeight: '700'},
+  uploadHint: {color: '#ffffff40', fontSize: 16},
+  preview: {width: '100%', height: 200, borderRadius: 20},
 
-  loadingBox: {alignItems: 'center', padding: 24, gap: 12},
-  loadingText: {color: '#ffffff60', fontSize: 14},
+  stateBox: {alignItems:'center', gap: 12, paddingVertical: 24},
+  stateText: {color: '#ffffff60', fontSize: 14},
 
-  errorBox: {backgroundColor: '#2a1a1a', borderRadius: 12, padding: 16, alignItems: 'center', gap: 8},
-  errorText: {color: '#EF4444', fontSize: 14, fontWeight: '700', marginBottom:12, letterSpacing: 0.5},
-  retryText: {color: '#6366F1', fontSize: 14, fontWeight: '600'},
+  errorCard: {backgroundColor: '#1a1010', borderRadius: 16, padding: 20, gap: 6, marginBottom: 16},
+  errorTitle: {color: '#EF4444', fontSize: 15, fontWeight: '700'},
+  errorSub: {color: '#ffffff50', fontSize: 13},
+  retryBtn: {marginTop: 8, backgroundColor: '#EF444422', borderRadius: 10, padding: 12, alignItems: 'center'},
+  retryText: {color: '#EF4444', fontWeight: '600', fontSize: 14},
 
-  resultBox: {backgroundColor: '#2a1a1a', borderRadius: 12, padding: 16, alignItems: 'center', gap: 8},
-  resultTitle: {color: '#6366F1', fontSize: 14, fontWeight: '700', marginBottom: 12, letterSpacing: 0.5},
-  slowRow: {paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#2a2a2a'},
-  slotLeft: {gap: 3},
-  slotSubject: {color: '#fff'},
-  slotMeta: {color: '#ffffff50', fontSize: 12},
+  resultSection: {gap: 10},
+  resultHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4},
 
-  confirmBtn: {backgroundColor: '#6366F1', borderRadius: 14, padding: 16, alignItems: 'center', marginTop: 20},
-  confirmText: {color: '#fff', fontWeight: '700',  fontSize: 15},
-  retryBtn: {padding: 12, alignItems: 'center'},
-  retrynBtnText: {color: '#ffffff40', fontSize: 13},
+  resultTitle: {color: '#fff', fontSize: 18, fontWeight: '700'},
+  badge: {width: 28, height: 28, borderRadius: 14, backgroundColor: '#6366F1', alignItems:'center', justifyContent:'center'},
+  badgeText: {color: '#fff', fontSize: 13, fontWeight:'700'},
+
+  slotCard: {
+    backgroundColor: '#161616', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems:'center', gap: 12, borderLeftWidth:3
+  },
+
+  slotDot: {width: 8, height: 8, borderRadius: 4},
+  slotInfo: {flex:1},
+  slotSubject: {color: '#fff', fontSize: 15, fontWeight: '600'},
+  slotMeta: {color: '#ffffff50', fontSize: 12, marginTop:2},
+  roomBadge: {paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8},
+  roomText: {fontSize: 12, fontWeight: '600'},
+
+  confirmBtn: {backgroundColor: '#6366F1', borderRadius: 16, padding: 18, alignItems: 'center', marginTop: 8},
+  confirmText: {color: '#fff', fontWeight: '700',  fontSize: 16},
+  reUploadBtn: {padding: 14, alignItems: 'center'},
+  reUploadText: {color: '#ffffff30', fontSize: 13},
 })
