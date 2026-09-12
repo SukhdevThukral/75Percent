@@ -19,10 +19,17 @@ export default function Onboarding(){
   const [error, setError] = useState<string | null>(null)
 
   const pickImg = async()=>{
-    const result = await ImagePicker.launchCameraAsync({
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (!permission.granted){
+      alert('Permission needed to access photos')
+      return
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       base64: true,
       quality: 0.8,
+      allowsEditing: false,
     })
     
     if (!result.canceled  && result.assets[0].base64) {
@@ -74,7 +81,7 @@ export default function Onboarding(){
   const confirm = async()=> {
     if (!parsed) return
     await AsyncStorage.setItem('timetable', JSON.stringify(parsed))
-    router.replace('/(tabs)/index')
+    router.replace('/(tabs)' as any)
   }
 
   return(
