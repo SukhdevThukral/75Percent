@@ -4,50 +4,22 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ClassSlot } from '..'
 
-const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const CLASSES = [
+    {subject: 'Mathematics', time: '9:00 AM', room: 'B-204', teacher: 'Mr. Sharma'},
+    {subject: 'Physics', time: '10:30 AM', room: 'A-101', teacher: 'Ms. Verma'},
+    {subject: 'English', time: '12:00 PM', room: 'C-301', teacher: 'Mr. Singh'},
+    {subject: 'Chemistry', time: '2:00 PM', room: 'Lab-1', teacher: 'Dr. Gupta'},
+]
 
 type Status = 'present' | 'absent' | null
 
-export default function HomeScreen() {
-    const [timetable, setTimetable] = useState<ClassSlot[]>([])
-    const [attendance, setAttendance] = useState<Record<string, Status>>({})
-    const [loading, setLoading] = useState(true)
+export default function Home() {
+    const [status, setStatus] = useState<Record<string, Status>>({})
 
-    const today = DAYS[new Date().getDay()]
-
-    useEffect(() => {
-        const load = async()=>{
-            const raw = await AsyncStorage.getItem('timetable')
-            if (raw) setTimetable(JSON.parse(raw))
-                setLoading(false)
-        }
-        load()
-    }, [])
-
-    const todaysClasses = timetable.filter(slot=> 
-        slot.day.toLowerCase() === today.toLowerCase()
-    )
-
-    const totalClasses = timetable.length * 4 //rough estimate across weeks
-    const attended = Object.values(attendance).filter(v=>v==='present').length
-    const overall = totalClasses === 0?0 : Math.round((attended / totalClasses)*100)
-
-    const accentColor = overall >= 80 ? '#6366F1' : overall >= 75 ? '#F59E0B' : '#EF4444'
-
-    const mark = (id: string, status: Status)=> {
-        setAttendance(prev => ({
-            ...prev,
-            [id]: prev[id] === status ? null:status
-        }))
+    const toggle = (subject: string, val: Status) => {
+        setStatus(p=> ({...p,[subject]: p[subject] === val ? null : val}))
     }
 
-    if(loading){
-        return(
-            <SafeAreaView style={s.safe}>
-                <ActivityIndicator color="#6366F1" style={{marginTop: 100}}/>
-            </SafeAreaView>
-        )
-    }
 
     return(
         <SafeAreaView style={s.safe}>
