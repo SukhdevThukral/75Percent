@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ClassSlot } from '..'
+import tw from 'twrnc'
 
 const CLASSES = [
     {subject: 'Mathematics', time: '9:00 AM', room: 'B-204', teacher: 'Mr. Sharma'},
@@ -20,6 +21,9 @@ export default function Home() {
         setStatus(p=> ({...p,[subject]: p[subject] === val ? null : val}))
     }
 
+    const attended = Object.values(status).filter(v=> v === 'present').length
+    const total = CLASSES.length
+    const percent = total === 0 ? 75 : Math.round((attended/total)*100)
 
     return(
         <SafeAreaView style={s.safe}>
@@ -92,9 +96,10 @@ export default function Home() {
 
 const s = StyleSheet.create({
     safe: {flex: 1, backgroundColor: '#0F0F0F'},
-    container: {padding: 20, paddingBottom: 40},
+    container: {padding: 24, paddingBottom: 60, paddingTop: 12},
 
-    header: {flexDirection: 'row', alignItems: 'center', marginBottom: 20},
+    header: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28},
+    avatarWrap: {}
     avatar: {width: 40, height: 40, borderRadius: 20, backgroundColor: '#6366F1', alignItems: 'center', justifyContent: 'center', marginRight: 10},
     avatarText: {color: '#fff', fontWeight: '700', fontSize: 16},
     headerMid: {flex: 1},
