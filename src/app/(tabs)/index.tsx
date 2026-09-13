@@ -68,7 +68,7 @@ export default function Home() {
                 )}
 
                 {!done ? (
-                    <View style={[{height: 280, width: '100%', position:'relative'}, tw`-ml-3`]}>
+                    <View style={[{height: 280, width: '100%', position:'relative'}]}>
                         {CLASSES.slice(cardIndex+1, cardIndex+3).map((cls, ri)=> {
                             const i = ri + 1
                             const color = COLORS[(cardIndex+i) % COLORS.length]
@@ -80,15 +80,16 @@ export default function Home() {
                                         position: 'absolute',
                                         top: i *10,
                                         left: i*10,
-                                        right: -(i*10),
+                                        right: (i*10),
                                         bottom: 0,
+                                        zIndex: -i
                                     }
                                 ]}/>
                             )
                         })}
 
                         <View style={{position: 'absolute', top:0, left:0, right: 0, height: 256}}>
-                            <Swiper ref={swiperRef} cards={CLASSES} cardIndex={cardIndex} onSwipedRight={onSwipedRight} onSwipedLeft={onSwipedLeft} onSwipedAll={() => setDone(true)} onSwiped={(i) => setCardIndex(i + 1)} stackSize={3} stackScale={6} stackSeparation={18} inputRotationRange={[-20, 0, 20]} outputRotationRange={['-3deg', '0deg', '3deg']} cardStyle={{top: 0, left:0, right:0, bottom:0}} horizontalSwipe={true} verticalSwipe={false} stackAnimationFriction={1} stackAnimationTension={40} animateOverlayLabelsOpacity overlayLabels={{
+                            <Swiper ref={swiperRef} cards={CLASSES} cardIndex={cardIndex} onSwipedRight={onSwipedRight} onSwipedLeft={onSwipedLeft} onSwipedAll={() => setDone(true)} onSwiped={(i) => setCardIndex(i + 1)} stackSize={3} cardStyle={{top: 0, left:0, right:0, bottom:0}} animateOverlayLabelsOpacity overlayLabels={{
                                 left: {
                                     title: 'ABSENT',
                                     style: {
@@ -134,7 +135,10 @@ export default function Home() {
 
                 {!done && (
                     <View style={tw`flex-row justify-center gap-6 pb-8 mt-4`}>
-                        <TouchableOpacity style={tw`w-16 h-16 rounded-full bg-[#DC262622] border-2 border-[#DC262622]`} onPress={() => swiperRef.current?.swipeLeft()}>
+                        <TouchableOpacity style={tw`w-16 h-16 rounded-full bg-[#DC262622] border-2 border-[#DC262622] items-center justify-center`} onPress={() => swiperRef.current?.swipeLeft()}>
+                            <Text style={tw`text-[#059669] text-2xl font-bold`}>✕</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={tw`w-16 h-16 rounded-full bg-[#DC262622] border-2 border-[#DC262622] items-center justify-center`} onPress={() => swiperRef.current?.swipeRight()}>
                             <Text style={tw`text-[#059669] text-2xl font-bold`}>✔️</Text>
                         </TouchableOpacity>
                     </View>
