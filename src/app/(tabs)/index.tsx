@@ -15,12 +15,19 @@ const CLASSES = [
     {subject: 'Chemistry', time: '2:00 PM', room: 'Lab-1', teacher: 'Dr. Gupta'},
 ]
 
-type Status = 'present' | 'absent' | null
+const nav_items = [
+    {icon: '⌂', label: 'home'},
+    {icon: '📅', label: 'schedule'},
+    {icon: '📋', label: 'attendance'},
+    {icon: '👤', label: 'profile'},
+]
+
 
 export default function Home() {
     const [results, setResults] = useState<Record<string, 'present' | 'absent'>>({})
     const [cardIndex, setCardIndex] = useState(0)
     const [done, setDone] = useState(false)
+    const [activeNav, setActiveNav] = useState('home')
     const swiperRef = useRef<any>(null)
 
     const onSwipedRight = (i: number) => {
@@ -93,15 +100,15 @@ export default function Home() {
                                 left: {
                                     title: 'ABSENT',
                                     style: {
-                                        label: {color: '#DC2626', fontSize: 28, fontWeight: '900', borderColor: '#DC2626', borderWidth: 3, borderRadius: 12, padding: 8},
+                                        label: {color: '#b309099c', fontSize: 28, fontWeight: '900', borderColor: '#b309099c', borderWidth: 3, borderRadius: 8, padding: 6, transform: [{rotate: '15deg'}]},
                                         wrapper: {flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-start', marginTop:20, marginLeft: 20}
                                     }
                                 },
                                 right: {
                                     title: 'PRESENT',
                                     style: {
-                                        label: {color: '#059669', fontSize: 28, fontWeight: '900', borderColor: '#059669', borderRadius: 12, padding: 8},
-                                        wrapper: {flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: 20, marginLeft: 20}
+                                        label: {color: '#09ff1d', fontSize: 28, fontWeight: '900', borderColor: '#09ff1d', borderWidth:3, borderRadius: 8, padding: 6, transform: [{rotate: '-15deg'}]},
+                                        wrapper: {flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: 5, marginLeft: 2}
                                     }
                                 }
                             }}
@@ -132,17 +139,19 @@ export default function Home() {
                         </TouchableOpacity>
                     </View>
                 )}
+            </View>
 
-                {!done && (
-                    <View style={tw`flex-row justify-center gap-6 pb-8 mt-4`}>
-                        <TouchableOpacity style={tw`w-16 h-16 rounded-full bg-[#DC262622] border-2 border-[#DC262622] items-center justify-center`} onPress={() => swiperRef.current?.swipeLeft()}>
-                            <Text style={tw`text-[#059669] text-2xl font-bold`}>✕</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={tw`w-16 h-16 rounded-full bg-[#DC262622] border-2 border-[#DC262622] items-center justify-center`} onPress={() => swiperRef.current?.swipeRight()}>
-                            <Text style={tw`text-[#059669] text-2xl font-bold`}>✔️</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+            <View style={tw`items-center pb-6 pt-3`}>
+                <View style={{flexDirection: 'row', backgroundColor: '#1C1C1E', borderRadius:40, paddingVertical: 8, paddingHorizontal: 10, gap: 8,}}>
+                    {nav_items.map((item)=> {
+                        const isActive = activeNav === item.label
+                        return(
+                            <TouchableOpacity key={item.label} onPress={()=> setActiveNav(item.label)} style={{width: 52, height:52, borderRadius: 26, backgroundColor: isActive?'#7C3AED':'transparent', alignItems: 'center', justifyContent: 'center'}}>
+                                <Text style={{fontSize: 20}}>{item.icon}</Text>
+                            </TouchableOpacity>
+                        )
+                    })}
+                </View>
             </View>
         </SafeAreaView>
     )
