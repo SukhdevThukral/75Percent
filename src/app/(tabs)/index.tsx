@@ -68,7 +68,7 @@ export default function Home() {
                 )}
 
                 {!done ? (
-                    <View style={[{height: 280, width: '100%', position:'relative'}]}>
+                    <View style={[{height: 280, width: '100%', position:'relative'}]} pointerEvents='box-none'>
                         {CLASSES.slice(cardIndex+1, cardIndex+3).map((cls, ri)=> {
                             const i = ri + 1
                             const color = COLORS[(cardIndex+i) % COLORS.length]
@@ -88,8 +88,8 @@ export default function Home() {
                             )
                         })}
 
-                        <View style={{position: 'absolute', top:0, left:0, right: 0, height: 256}}>
-                            <Swiper ref={swiperRef} cards={CLASSES} cardIndex={cardIndex} onSwipedRight={onSwipedRight} onSwipedLeft={onSwipedLeft} onSwipedAll={() => setDone(true)} onSwiped={(i) => setCardIndex(i + 1)} stackSize={3} cardStyle={{top: 0, left:0, right:0, bottom:0}} animateOverlayLabelsOpacity overlayLabels={{
+                        <View style={{position: 'absolute', top:0, left:0, right: 0, height: 256}} pointerEvents='box-none'>
+                            <Swiper ref={swiperRef} containerStyle={{height: 256}} cards={CLASSES} cardIndex={cardIndex} onSwipedRight={onSwipedRight} onSwipedLeft={onSwipedLeft} onSwipedAll={() => setDone(true)} onSwiped={(i) => setCardIndex(i + 1)} stackSize={3} cardStyle={{top: 0, left:0, right:0, bottom:0}} animateOverlayLabelsOpacity overlayLabels={{
                                 left: {
                                     title: 'ABSENT',
                                     style: {
@@ -132,7 +132,9 @@ export default function Home() {
                     </View>
                 )}
             </View>
-            <NavBar/>
+            <View style={{position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 9999, elevation: 9999}}>
+                <NavBar/>
+            </View>
         </SafeAreaView>
     )
 }
