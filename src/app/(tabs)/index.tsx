@@ -4,7 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Swiper from 'react-native-deck-swiper'
 // import AsyncStorage from '@react-native-async-storage/async-storage'
 // import { ClassSlot } from '..'
+import NavBar from '@/components/NavBar'
 import tw, { style } from 'twrnc'
+import Animated, {useSharedValue, useAnimatedStyle, withSpring, withSequence} from 'react-native-reanimated'
 
 const COLORS = ['#7C3AED', '#DB2777', '#059669', '#D97706', '#2563EB', '#DC2626']
 
@@ -15,19 +17,11 @@ const CLASSES = [
     {subject: 'Chemistry', time: '2:00 PM', room: 'Lab-1', teacher: 'Dr. Gupta'},
 ]
 
-const nav_items = [
-    {icon: '⌂', label: 'home'},
-    {icon: '📅', label: 'schedule'},
-    {icon: '📋', label: 'attendance'},
-    {icon: '👤', label: 'profile'},
-]
-
 
 export default function Home() {
     const [results, setResults] = useState<Record<string, 'present' | 'absent'>>({})
     const [cardIndex, setCardIndex] = useState(0)
     const [done, setDone] = useState(false)
-    const [activeNav, setActiveNav] = useState('home')
     const swiperRef = useRef<any>(null)
 
     const onSwipedRight = (i: number) => {
@@ -114,7 +108,6 @@ export default function Home() {
                             }}
                             backgroundColor='transparent' cardVerticalMargin={0} renderCard={(cls, i) => {
                                 const color = COLORS[i% COLORS.length]
-                                const offset = i * 8
                                 return (
                                     <View style={[tw`rounded-3xl p-8 h-64 justify-between`, {backgroundColor: color}]}>
 
@@ -140,19 +133,7 @@ export default function Home() {
                     </View>
                 )}
             </View>
-
-            <View style={tw`items-center pb-6 pt-3`}>
-                <View style={{flexDirection: 'row', backgroundColor: '#1C1C1E', borderRadius:40, paddingVertical: 8, paddingHorizontal: 10, gap: 8,}}>
-                    {nav_items.map((item)=> {
-                        const isActive = activeNav === item.label
-                        return(
-                            <TouchableOpacity key={item.label} onPress={()=> setActiveNav(item.label)} style={{width: 52, height:52, borderRadius: 26, backgroundColor: isActive?'#7C3AED':'transparent', alignItems: 'center', justifyContent: 'center'}}>
-                                <Text style={{fontSize: 20}}>{item.icon}</Text>
-                            </TouchableOpacity>
-                        )
-                    })}
-                </View>
-            </View>
+            <NavBar/>
         </SafeAreaView>
     )
 }
