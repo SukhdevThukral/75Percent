@@ -2,23 +2,13 @@ import {View, Text, ScrollView, TouchableOpacity} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useState } from 'react'
 import tw from 'twrnc'
+import { router } from 'expo-router'
+import { useEffect } from 'react'
+import { loadClasses, ClassSlot } from '@/utils/classes'
 
-const CLASSES = [
-    {subject: 'Mathematics', time: '9:00 AM', end:'10:300 AM', room: 'B-204', teacher: 'Mr. Sharma', color: '#7C3AED'},
-    {subject: 'Physics', time: '10:30 AM', end: '12:00 PM', room: 'A-101', teacher: 'Ms. Verma', color: '#DB2777'},
-    {subject: 'English', time: '12:00 PM', end: '1:30 PM', room: 'C-301', teacher: 'Mr. Singh', color: '#059669'},
-    {subject: 'Chemistry', time: '2:00 PM', end: '3:30 PM', room: 'Lab-1', teacher: 'Dr. Gupta', color: '#D97706'},
-]
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
-const TIME_SLOTS = ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM",  "03:00 PM"]
-
-const WEEK = ['18\nMon', '19\nTue', '20\nWed', '21\nThu', '22\nFri', '23\nSat', '24\nSun']
-
-function getClassForTime(time: string) {
-    return CLASSES.find(c => c.time === time || (
-        toMinutes(time) >= toMinutes(c.time) && toMinutes(time) < toMinutes(c.end)
-    ))
-}
 
 function toMinutes(t: string) {
     const [hm, period] = t.split(' ')
@@ -28,36 +18,88 @@ function toMinutes(t: string) {
     return h * 60 + m
 }
 
+function getWeekDates(baseDate: Date) {
+    const week = []
+    const start = new Date(baseDate)
+    const day = start.getDay()
+    start.setDate(start.getDate() - day) // go to Sunday
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(start)
+        d.setDate(start.getDate() + i)
+        week.push(d)
+    }
+    return week
+}
+
 export default function Schedule(){
-    const [activeDay, setActiveDay] = useState(3)
+    const [selectedDate, setSelectedDate] = useState(new Date())
+    const [classes, setClasses] = useState<ClassSlot[]>([])
+    const [weekOffset, setWeekOffset] = useState(0)
+
+
+    useEffect(() => {
+        loadClasses().then(saved => { if (saved) setClasses(saved) })
+    }, [])
+
+    const baseDate = new Date()
+    baseDate.setDate(baseDate.getDate() + weekOffset * 7)
+    const weekDates = getWeekDates(baseDate)
+    
+    const selectedDay = DAY_NAMES[selectedDate.getDay()]
+    const dayClasses = classes
+        .filter(c => c.day === selectedDay)
+        .sort((a, b) => toMinutes(a.time) - toMinutes(b.time))
+
+    const TIME_SLOTS = dayClasses.length > 0 
+        ? [...new Set(dayClasses.map(c => c.time))].sort((a, b) => toMinutes(a) - toMinutes(b))
+        : []
+
+    function getClassForTime(time: string) {
+        return dayClasses.find(c => c.time === time || (
+            toMinutes(time) >= toMinutes(c.time) && toMinutes(time) < toMinutes(c.end)
+        ))
+    }
+
+    const monthLabel = MONTH_NAMES[selectedDate.getMonth()] + ' ' + selectedDate.getFullYear()
 
     return (
         <SafeAreaView style={tw`flex-1 bg-[#0f0f0f]`}>
-            <View style={tw`px-6 pt-4 flex-row items-center justify-between mb-10 mt-2`}>
-                <TouchableOpacity style={tw`w-9 h-9 rounded-full bg-[#1C1C1E] items-center justify-center`}>
+            <View style={tw`px-6 pt-4 flex-row items-center justify-between mb-4 mt-2`}>
+                <TouchableOpacity style={tw`w-9 h-9 rounded-full bg-[#1C1C1E] items-center justify-center`} onPress={() => router.back()}>
                     <Text style={tw`text-white text-base`}>◀</Text>
                 </TouchableOpacity>
-                <Text style={tw`text-white text-2xl font-bold -ml-5`}>Calender</Text>
-                <TouchableOpacity style={tw`w- h-9 rounded-full bg-[#1C1C1E] items-center justify-center`}>
-                    <Text style={tw`text-white text-base`}></Text>
+                <Text style={tw`text-white text-2xl font-bold`}>Calender</Text>
+                <View style={tw`w-9 h-9`}/>
+            </View>
+            <View style={tw`flex-row items-center justify-between px-6 mb-4`}>
+                <TouchableOpacity onPress={() => setWeekOffset(w=> w -1)}>
+                    <Text style={tw`text-[#7C3AED] text-2xl font-bold`}>‹</Text>
+                </TouchableOpacity>
+                <Text style={tw`text-[#ffffff60] text-sm`}>{monthLabel}</Text>
+                <TouchableOpacity onPress={() => setWeekOffset(w => w + 1)}>
+                    <Text style={tw`text-[#7C3AED] text-2xl font-bold`}>›</Text>
                 </TouchableOpacity>
             </View>
 
-            <Text style={tw`text-[#ffffff60] text-lg text-center mb-6 mt-`}>August</Text>
-
             <View style={tw`flex-row justify-between px-4 mb-6`}>
-                {WEEK.map((day, i) => {
-                    const [num, label] = day.split('\n')
-                    const isActive = i === activeDay
+                {weekDates.map((date, i) => {
+                    const isToday  = date.toDateString() === new Date().toDateString()
+                    const isActive  = date.toDateString() === selectedDate.toDateString()
                     return (
-                        <TouchableOpacity key={i} onPress={() => setActiveDay(i)} style={[tw`items-center py-2 px-1 rounded-2xl`, {minWidth: 40}, isActive && { backgroundColor: '#7C3AED', borderRadius: 20, paddingVertical: 10, paddingHorizontal: 12}
+                        <TouchableOpacity key={i} onPress={() => setSelectedDate(new Date(date))} style={[tw`items-center py-2 px-1`, {minWidth: 40}, isActive && { backgroundColor: '#7C3AED', borderRadius: 20, paddingVertical: 10, paddingHorizontal: 12}
                         ]}>
-                            <Text style={[tw`text-base font-bold`, {color: isActive?'#fff' : '#fff'}]}>{num}</Text>
-                            <Text style={[tw`text-xs mt-1`, {color: isActive ? '#ffffff90' : '#ffffff40'}]}>{label}</Text>
+                            <Text style={[tw`text-base font-bold`, {color:'#fff'}]}>{date.getDate()}</Text>
+                            <Text style={[tw`text-xs mt-1`, {color: isActive ? '#ffffff90' : isToday ? '#7C3AED' : '#ffffff40'}]}>{DAY_NAMES[date.getDay()]}</Text>
                         </TouchableOpacity>
                     )
                 })}
             </View>
+
+            {TIME_SLOTS.length === 0 && (
+                <View style={tw`items-center mt-20`}>
+                    <Text style={tw`text-[#ffffff30] text-sm`}>No classes on {selectedDay}</Text>
+                </View>
+            )}
 
             <ScrollView style={tw`flex-1 px-4`} showsVerticalScrollIndicator={false}>
                 {TIME_SLOTS.map((slot, i) => {
