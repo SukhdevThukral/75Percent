@@ -5,8 +5,6 @@ import Animated, {useSharedValue, useAnimatedStyle, withSpring} from 'react-nati
 const nav_items = [
     {icon: '⌂', label: 'home', href: '/(tabs)'},
     {icon: '📅', label: 'schedule', href: '/(tabs)/schedule'},
-    {icon: '📋', label: 'attendance', href: '/(tabs)/attendance'},
-    {icon: '👤', label: 'profile', href: '/(tabs)/profile'},
 ]
 
 function NavItem({item, isActive}: {item: typeof nav_items[0], isActive: boolean}){
@@ -18,7 +16,7 @@ function NavItem({item, isActive}: {item: typeof nav_items[0], isActive: boolean
             scale.value = withSpring(0.7, {}, () => {
                 scale.value = withSpring(1, {damping: 6, stiffness: 200})
             })
-            router.push(item.href as any)
+            router.navigate(item.href as any)
         }}
         style={{
             width: 52, height: 52, borderRadius: 26, backgroundColor: isActive?'#7C3AED':'transparent',
