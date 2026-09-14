@@ -6,7 +6,6 @@ import Swiper from 'react-native-deck-swiper'
 // import { ClassSlot } from '..'
 import NavBar from '@/components/NavBar'
 import tw, { style } from 'twrnc'
-import Animated, {useSharedValue, useAnimatedStyle, withSpring, withSequence} from 'react-native-reanimated'
 
 const COLORS = ['#7C3AED', '#DB2777', '#059669', '#D97706', '#2563EB', '#DC2626']
 
