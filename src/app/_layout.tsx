@@ -1,14 +1,16 @@
-import { Stack } from "expo-router";
-import { StatusBar } from "react-native";
+import { Tabs } from "expo-router";
+import { usePathname } from "expo-router";
+import Animated, {FadeIn, FadeOut, SlideInRight, SlideOutLeft} from "react-native-reanimated";
 
-export default function RootLayout() {
-    return(
-        <>
-            <StatusBar barStyle="light-content" backgroundColor="#0f0f0f"/>
-            <Stack screenOptions={{headerShown:false}}>
-                <Stack.Screen name="index"/>
-                <Stack.Screen name="(tabs)"/>
-            </Stack>
-        </>
-    )
+
+export default function TabLayout() {
+    return (
+        <Tabs screenOptions={{
+            animation: 'shift'
+        }}>
+            <Tabs.Screen name="index" options={{title: 'Home'}}/>
+            <Tabs.Screen name="schedule" options={{title: 'Schedule'}}/>
+
+        </Tabs>
+    );
 }
