@@ -1,7 +1,6 @@
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useState } from 'react'
-import NavBar from '@/components/NavBar'
 import tw from 'twrnc'
 
 const CLASSES = [
@@ -34,17 +33,17 @@ export default function Schedule(){
 
     return (
         <SafeAreaView style={tw`flex-1 bg-[#0f0f0f]`}>
-            <View style={tw`px-6 pt-4 flex-row items-center justify-between mb-2`}>
+            <View style={tw`px-6 pt-4 flex-row items-center justify-between mb-10 mt-2`}>
                 <TouchableOpacity style={tw`w-9 h-9 rounded-full bg-[#1C1C1E] items-center justify-center`}>
-                    <Text style={tw`text-white text-base`}>‹</Text>
+                    <Text style={tw`text-white text-base`}>◀</Text>
                 </TouchableOpacity>
-                <Text style={tw`text-white text-lg font-bold`}>Schedule</Text>
+                <Text style={tw`text-white text-2xl font-bold -ml-5`}>Calender</Text>
                 <TouchableOpacity style={tw`w- h-9 rounded-full bg-[#1C1C1E] items-center justify-center`}>
-                    <Text style={tw`text-white text-base`}>⋮</Text>
+                    <Text style={tw`text-white text-base`}></Text>
                 </TouchableOpacity>
             </View>
 
-            <Text style={tw`text-[#ffffff60] text-sm text-center mb-4`}>August</Text>
+            <Text style={tw`text-[#ffffff60] text-lg text-center mb-6 mt-`}>August</Text>
 
             <View style={tw`flex-row justify-between px-4 mb-6`}>
                 {WEEK.map((day, i) => {
