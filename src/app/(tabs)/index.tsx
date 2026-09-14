@@ -6,35 +6,54 @@ import Swiper from 'react-native-deck-swiper'
 // import { ClassSlot } from '..'
 import NavBar from '@/components/NavBar'
 import tw, { style } from 'twrnc'
+import { router } from 'expo-router'
+import { loadClasses, hasOnboarded, ClassSlot } from '@/utils/classes'
 
 const COLORS = ['#7C3AED', '#DB2777', '#059669', '#D97706', '#2563EB', '#DC2626']
-
-const CLASSES = [
-    {subject: 'Mathematics', time: '9:00 AM', room: 'B-204', teacher: 'Mr. Sharma'},
-    {subject: 'Physics', time: '10:30 AM', room: 'A-101', teacher: 'Ms. Verma'},
-    {subject: 'English', time: '12:00 PM', room: 'C-301', teacher: 'Mr. Singh'},
-    {subject: 'Chemistry', time: '2:00 PM', room: 'Lab-1', teacher: 'Dr. Gupta'},
-]
-
 
 export default function Home() {
     const [results, setResults] = useState<Record<string, 'present' | 'absent'>>({})
     const [cardIndex, setCardIndex] = useState(0)
     const [done, setDone] = useState(false)
     const swiperRef = useRef<any>(null)
+    const [classes, setClasses] = useState<ClassSlot[]>([])
+    const [loading, setLoading] = useState(true)
+    const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const todayDay = DAYS[new Date().getDay()]
+    const todaysClasses = classes.filter(c => c.day === todayDay)
+
+    useEffect(() => {
+        async function init() {
+            const onboarded = await hasOnboarded()
+            if (!onboarded) { router.replace('/onboarding'); return }
+            const saved = await loadClasses()
+            if (saved) setClasses(saved)
+            setLoading(false)
+        }
+        init()
+    }, [])
+    
+    if (loading) return (
+        <SafeAreaView style={tw`flex-1 bg-[#0f0f0f] items-center justify-center`}>
+            <ActivityIndicator size='large' color='#7C3AED' />
+        </SafeAreaView>
+    )
 
     const onSwipedRight = (i: number) => {
-        setResults(p=> ({...p, [CLASSES[i].subject]: 'present'}))
+        setResults(p=> ({...p, [todaysClasses[i].subject]: 'present'}))
     }
 
     const onSwipedLeft = (i: number)=> {
-        setResults(p=> ({...p, [CLASSES[i].subject]: 'absent'}))
+        setResults(p=> ({...p, [todaysClasses[i].subject]: 'absent'}))
     }
 
+
     const attended = Object.values(results).filter(v=> v === 'present').length
-    const total = CLASSES.length
+    const total = todaysClasses.length
     const percent = total === 0 ? 75 : Math.round((attended/total)*100)
     const safe = percent >=75
+
+
 
     return(
         <SafeAreaView style={tw`flex-1 bg-[#0f0f0f]`}>
@@ -69,7 +88,7 @@ export default function Home() {
 
                 {!done ? (
                     <View style={[{height: 280, width: '100%', position:'relative'}]} pointerEvents='box-none'>
-                        {CLASSES.slice(cardIndex+1, cardIndex+3).map((cls, ri)=> {
+                        {todaysClasses.slice(cardIndex+1, cardIndex+3).map((cls, ri)=> {
                             const i = ri + 1
                             const color = COLORS[(cardIndex+i) % COLORS.length]
                             return(
@@ -89,7 +108,7 @@ export default function Home() {
                         })}
 
                         <View style={{position: 'absolute', top:0, left:0, right: 0, height: 256}} pointerEvents='box-none'>
-                            <Swiper ref={swiperRef} containerStyle={{height: 256}} cards={CLASSES} cardIndex={cardIndex} onSwipedRight={onSwipedRight} onSwipedLeft={onSwipedLeft} onSwipedAll={() => setDone(true)} onSwiped={(i) => setCardIndex(i + 1)} stackSize={3} cardStyle={{top: 0, left:0, right:0, bottom:0}} animateOverlayLabelsOpacity overlayLabels={{
+                            <Swiper ref={swiperRef} containerStyle={{height: 256}} cards={todaysClasses} cardIndex={cardIndex} onSwipedRight={onSwipedRight} onSwipedLeft={onSwipedLeft} onSwipedAll={() => setDone(true)} onSwiped={(i) => setCardIndex(i + 1)} stackSize={3} cardStyle={{top: 0, left:0, right:0, bottom:0}} animateOverlayLabelsOpacity overlayLabels={{
                                 left: {
                                     title: 'ABSENT',
                                     style: {
