@@ -2,12 +2,10 @@ import {View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator}
 import { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Swiper from 'react-native-deck-swiper'
-// import AsyncStorage from '@react-native-async-storage/async-storage'
-// import { ClassSlot } from '..'
 import NavBar from '@/components/NavBar'
 import tw, { style } from 'twrnc'
 import { router } from 'expo-router'
-import { loadClasses, hasOnboarded, ClassSlot } from '@/utils/classes'
+import { loadClasses, hasOnboarded, ClassSlot, loadName } from '@/utils/classes'
 
 const COLORS = ['#7C3AED', '#DB2777', '#059669', '#D97706', '#2563EB', '#DC2626']
 
@@ -18,6 +16,7 @@ export default function Home() {
     const swiperRef = useRef<any>(null)
     const [classes, setClasses] = useState<ClassSlot[]>([])
     const [loading, setLoading] = useState(true)
+    const [userName, setUserName] = useState('')
     const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     const todayDay = DAYS[new Date().getDay()]
     const todaysClasses = classes.filter(c => c.day === todayDay)
@@ -28,6 +27,8 @@ export default function Home() {
             if (!onboarded) { router.replace('/onboarding'); return }
             const saved = await loadClasses()
             if (saved) setClasses(saved)
+            const name = await loadName()
+            if (name) setUserName(name)
             setLoading(false)
         }
         init()
@@ -51,14 +52,11 @@ export default function Home() {
         setResults(p => ({...p, [todaysClasses[i].subject]: 'cancelled'}))
     }
 
-
     const attended = Object.values(results).filter(v=> v === 'present').length
     const total = todaysClasses.length
     const percent = total === 0 ? 75 : Math.round((attended/total)*100)
     const cancelled = Object.values(results).filter(v=> v === 'cancelled').length
     const safe = percent >=75
-
-
 
     return(
         <SafeAreaView style={tw`flex-1 bg-[#0f0f0f]`}>
@@ -66,11 +64,11 @@ export default function Home() {
                 <View style={tw`flex-row justify-between items-center mb-7`}>
                     <View style={tw`flex-row items-center gap-3`}>
                         <View style={tw`w-13 h-13 mt-2 rounded-full bg-[#7C3AED] items-center justify-center`}>
-                            <Text style={tw`text-white font-extrabold text-lg`}>S</Text>
+                            <Text style={tw`text-white font-extrabold text-lg`}>{userName[0]?.toUpperCase()}</Text>
                         </View>
                         <View>
                             <Text style={tw`text-[#ffffff40] mt-2 ml-2 text-lg`}>Good Morning !</Text>
-                            <Text style={tw`text-white text-lg font-bold ml-2 tracking-wide`}>Sukhdev Thukral</Text>
+                            <Text style={tw`text-white text-lg font-bold ml-2 tracking-wide`}>{userName}</Text>
                         </View>
                     </View>
                     <TouchableOpacity style={tw`w-10 h-10 rounded-full bg-[#1A1A1A] items-center justify-center`}>
@@ -143,7 +141,6 @@ export default function Home() {
                                 const color = COLORS[i% COLORS.length]
                                 return (
                                     <View style={[tw`rounded-3xl p-8 h-64 justify-between`, {backgroundColor: color}]}>
-
                                         <Text style={tw`text-white text-3xl font-extrabold tracking-tight`}>{cls.subject}</Text>
                                         <View style={tw`gap-2`}>
                                             <Text style={tw`text-[#ffffff90] text-base font-semibold`}>⏰ {cls.time}</Text>
