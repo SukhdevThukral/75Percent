@@ -12,7 +12,7 @@ import { loadClasses, hasOnboarded, ClassSlot } from '@/utils/classes'
 const COLORS = ['#7C3AED', '#DB2777', '#059669', '#D97706', '#2563EB', '#DC2626']
 
 export default function Home() {
-    const [results, setResults] = useState<Record<string, 'present' | 'absent'>>({})
+    const [results, setResults] = useState<Record<string, 'present' | 'absent' | 'cancelled'>>({})
     const [cardIndex, setCardIndex] = useState(0)
     const [done, setDone] = useState(false)
     const swiperRef = useRef<any>(null)
@@ -47,10 +47,15 @@ export default function Home() {
         setResults(p=> ({...p, [todaysClasses[i].subject]: 'absent'}))
     }
 
+    const onSwipedBottom = (i: number) => {
+        setResults(p => ({...p, [todaysClasses[i].subject]: 'cancelled'}))
+    }
+
 
     const attended = Object.values(results).filter(v=> v === 'present').length
     const total = todaysClasses.length
     const percent = total === 0 ? 75 : Math.round((attended/total)*100)
+    const cancelled = Object.values(results).filter(v=> v === 'cancelled').length
     const safe = percent >=75
 
 
@@ -81,7 +86,10 @@ export default function Home() {
                 {!done && (
                     <View style={tw`flex-row justify-between px-2 mb-18`}>
                         <Text style={tw`text-[#DC2626] text-xs font-bold`}>← Absent</Text>
-                        <Text style={tw`text-[#ffffff30] text-xs`}>swipe to mark</Text>
+                        <View style={tw`items-center gap-1`}>
+                            <Text style={tw`text-[#ffffff30] text-xs`}>swipe to mark</Text> 
+                            <Text style={tw`text-[#F59E0B] text-xs mt-5 -ml-2 font-bold`}> ↓ Cancelled</Text>
+                        </View>
                         <Text style={tw`text-[#059669] text-xs font-bold`}>Present →</Text>                        
                     </View>
                 )}
@@ -108,7 +116,7 @@ export default function Home() {
                         })}
 
                         <View style={{position: 'absolute', top:0, left:0, right: 0, height: 256}} pointerEvents='box-none'>
-                            <Swiper ref={swiperRef} containerStyle={{height: 256}} cards={todaysClasses} cardIndex={cardIndex} onSwipedRight={onSwipedRight} onSwipedLeft={onSwipedLeft} onSwipedAll={() => setDone(true)} onSwiped={(i) => setCardIndex(i + 1)} stackSize={3} cardStyle={{top: 0, left:0, right:0, bottom:0}} animateOverlayLabelsOpacity overlayLabels={{
+                            <Swiper ref={swiperRef} containerStyle={{height: 256}} cards={todaysClasses} cardIndex={cardIndex} onSwipedRight={onSwipedRight} onSwipedLeft={onSwipedLeft} onSwipedBottom={onSwipedBottom} verticalSwipe={true} onSwipedAll={() => setDone(true)} onSwiped={(i) => setCardIndex(i + 1)} stackSize={3} cardStyle={{top: 0, left:0, right:0, bottom:0}} animateOverlayLabelsOpacity overlayLabels={{
                                 left: {
                                     title: 'ABSENT',
                                     style: {
@@ -121,6 +129,13 @@ export default function Home() {
                                     style: {
                                         label: {color: '#09ff1d', fontSize: 28, fontWeight: '900', borderColor: '#09ff1d', borderWidth:3, borderRadius: 8, padding: 6, transform: [{rotate: '-15deg'}]},
                                         wrapper: {flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: 5, marginLeft: 2}
+                                    }
+                                }, 
+                                bottom: {
+                                    title: 'CANCELLED',
+                                    style: {
+                                        label: {color: '#F59E0B', fontSize: 28, fontWeight: '900', borderColor: '#F59E0B', borderWidth: 3, borderRadius: 8, padding: 6},
+                                        wrapper: {flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', marginTop: -10}
                                     }
                                 }
                             }}
@@ -143,7 +158,7 @@ export default function Home() {
                     <View style={tw`flex-1 items-center justify-center gap-4`}>
                         <Text style={tw`text-white text-2xl font-extrabold`}>All marked ✔️</Text>
                         <Text style={tw`text-[#ffffff50] text-sm`}>
-                            {attended} present · {total-attended} absent
+                            {attended} present · {total-attended - cancelled} absent
                         </Text>
                         <TouchableOpacity style={tw`mt-4 bg-[#7C3AED] px-8 py-4 rounded-2xl`} onPress={() => {setDone(false); setCardIndex(0); setResults({})}}>
                             <Text style={tw`text-white font-bold text-base`}>Reset</Text>
