@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "75Percent",
-    "slug": "75Percent",
+    "slug": "seventy5percent",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,7 +17,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sukhdevthukralsteam.seventy5percent"
     },
     "web": {
       "output": "static",
@@ -37,6 +38,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "77d33ddd-31a3-4fb4-822f-609e53dd84ad"
+      }
+    },
+    "owner": "sukhdevthukrals-team"
   }
 }
