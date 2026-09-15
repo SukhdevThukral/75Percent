@@ -5,6 +5,7 @@ import Swiper from 'react-native-deck-swiper'
 import NavBar from '@/components/NavBar'
 import tw, { style } from 'twrnc'
 import { router } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { loadClasses, hasOnboarded, ClassSlot, loadName } from '@/utils/classes'
 
 const COLORS = ['#7C3AED', '#DB2777', '#059669', '#D97706', '#2563EB', '#DC2626']
@@ -71,8 +72,8 @@ export default function Home() {
                             <Text style={tw`text-white text-lg font-bold ml-2 tracking-wide`}>{userName}</Text>
                         </View>
                     </View>
-                    <TouchableOpacity style={tw`w-10 h-10 rounded-full bg-[#1A1A1A] items-center justify-center`}>
-                        <Text style={tw`text-lg`}>🔔</Text>
+                    <TouchableOpacity style={tw`w-10 h-10 rounded-full bg-[#1A1A1A] items-center justify-center`} onPress={async () => {await AsyncStorage.clear(); router.replace('/onboarding')}}>
+                        <Text style={tw`text-lg`}>🗑️</Text>
                     </TouchableOpacity>
                 </View>
 
