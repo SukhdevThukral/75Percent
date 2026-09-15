@@ -1,56 +1,108 @@
-# Welcome to your Expo app 👋
+#  💯 75Percent
+> still figuring out react native — but this one actually lwk works lol
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+_i built a mobile app built with **Expo + React Native** that lets you upload your college timetable, parses it with AI, and shows your classes as swipeable cards + a calendar view. Started this to learn RN properly, not just follow tutorials_
 
-## Get started
+ 
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+https://github.com/user-attachments/assets/dc2a03ea-b63b-41f6-a99b-b495723dad94
 
-2. Start the app
 
-   ```bash
-   npx expo start
-   ```
 
-In the output, you'll find options to open the app in a
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## what it does
 
-## Get a fresh project
+- **Onboarding** where you enter your name, upload a photo of your timetable
+- **AI parsing** sends the image to Gemini, gets back structured class data (subject, time, room)
+- **Swipe cards**, swipe right = present, left = absent. tinder but for attendance :(
+- **Calendar screen**, a simple week strip + time axis view of all your classes for the day
+- **Custom nav bar**, designed from scratch, not the default expo tabs thing
 
-When you're ready, run:
+---
+
+## screens
+
+| screen | what's happening |
+|---|---|
+| `onboarding` | name input + image upload => Gemini API call |
+| `home` | swipeable class cards with present/absent tracking |
+| `schedule` | calendar view with colored time blocks per class |
+
+---
+
+## tech stack
+
+- [Expo](https://expo.dev) + Expo Router (file-based routing)
+- React Native
+- `react-native-deck-swiper` for the card swiping
+- `react-native-reanimated` for animations
+- `twrnc` (tailwind for react native) for styling
+- Google Gemini API for timetable image parsing
+- AsyncStorage to persist timetable data
+
+---
+
+## running locally
 
 ```bash
-npm run reset-project
+git clone https://github.com/SukhdevThukral/75Percent
+cd 75Percent
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+add a `.env` file:
+```
+EXPO_PUBLIC_GEMINI_KEY=your_gemini_api_key_here
+```
 
-### Other setup steps
+then run:
+```bash
+npx expo start
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+scan the QR with Expo Go on your phone and you're good.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## folder structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+app/
+├── (screens)/
+│   ├── index.tsx        # home / swipe cards
+│   └── schedule.tsx     # calendar view
+├── index.tsx            # redirect to home
+components/
+└── NavBar.tsx           # custom bottom nav
+```
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## what i learned (since ts was my first time)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- how expo router actually works with file-based navigation
+- using `react-native-reanimated` for spring animations
+- calling a multimodal AI API (Gemini) with base64 image data
+- building a custom nav bar instead of relying on expo's default tabs
+- why you can't call hooks inside a `.map()` (the hard way)
+
+
+## what's still rough
+
+- timetable data is hardcoded in some places, needs to pull from AsyncStorage properly
+- attendance tracking resets on app reload
+- no real backend, everything is local for now
+- UI is only tested on iOS
+
+---
+
+## why i built this
+
+college timetable is a mess and i wanted smthg that actually looks good on my phone. also wanted a real project to learn react native with since hate tutorials.
+
+*built by Sukhdev — still learning, shipping anyway* 🚀
+
+## LICENSE
+MIT
