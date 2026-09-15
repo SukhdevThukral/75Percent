@@ -20,7 +20,6 @@ https://github.com/user-attachments/assets/dc2a03ea-b63b-41f6-a99b-b495723dad94
 - **Calendar screen**, a simple week strip + time axis view of all your classes for the day
 - **Custom nav bar**, designed from scratch, not the default expo tabs thing
 
----
 
 ## screens
 
@@ -30,7 +29,6 @@ https://github.com/user-attachments/assets/dc2a03ea-b63b-41f6-a99b-b495723dad94
 | `home` | swipeable class cards with present/absent tracking |
 | `schedule` | calendar view with colored time blocks per class |
 
----
 
 ## tech stack
 
@@ -42,7 +40,6 @@ https://github.com/user-attachments/assets/dc2a03ea-b63b-41f6-a99b-b495723dad94
 - Google Gemini API for timetable image parsing
 - AsyncStorage to persist timetable data
 
----
 
 ## running locally
 
@@ -64,7 +61,6 @@ npx expo start
 
 scan the QR with Expo Go on your phone and you're good.
 
----
 
 ## folder structure
 
@@ -78,7 +74,6 @@ components/
 └── NavBar.tsx           # custom bottom nav
 ```
 
----
 
 ## what i learned (since ts was my first time)
 
@@ -96,13 +91,11 @@ components/
 - no real backend, everything is local for now
 - UI is only tested on iOS
 
----
 
 ## why i built this
 
 college timetable is a mess and i wanted smthg that actually looks good on my phone. also wanted a real project to learn react native with since hate tutorials.
 
-*built by Sukhdev — still learning, shipping anyway* 🚀
 
 ## LICENSE
 MIT
