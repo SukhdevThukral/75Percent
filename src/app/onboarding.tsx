@@ -6,7 +6,7 @@ import { router } from 'expo-router'
 import tw from 'twrnc'
 import { saveClasses, setOnboarded, assignColors } from '@/utils/classes'
 
-// const GEMINI_API_KEY = 
+const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_KEY
 
 export default function Onboarding() {
     const [image, setImage] = useState<string | null>(null)
