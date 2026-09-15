@@ -41,7 +41,7 @@ then just scan the QR with your Expo Go and app youre good to go!! or you can ju
 ## the rough edges (that im supposed to work on)
 
 - attendace tracking resets on every single app reload
-- no actual backend for the app its all local as of now
+- no actual backend for the app its absolutely local as of now
 
 
 ## LICENSE
