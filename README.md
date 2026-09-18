@@ -39,16 +39,14 @@ then just scan the QR with your Expo Go and app youre good to go!! or you can ju
 
 ## ai usage
 
-i used ai assitance to the minimal (Claude) during development for help w react native specifics this was my first react native project so i leaned on them similarly to how id use docs or even stack overflow. for ex, adding the name collection step in onboarding, wiring up `saveName​`/`loadName`​ with AsyncStorage adn making the home screen dyamniclly pull the user's name instead of having it hardcoded.
+i used ai assitance to the minimal (Claude) during development for help w react native specifics this was my first react native project, so i leaned on them similarly to how id use docs or even stack overflow. for ex, adding the name collection step in onboarding, wiring up `saveName​`/`loadName`​ with AsyncStorage and making the home screen dynamically pull the user's name instead of having it hardcoded.
 
 ## desg ref
-i used a desg [reference](https://dribbble.com/shots/26992050-Task-Management-Mobile-App-UI-Smart-Productivity-Experience) from [Dribbble](dribbble.com), i tried to completely copy it but obvi couldnt since its just so complex w tailwind
+i used a desg [reference](https://dribbble.com/shots/26992050-Task-Management-Mobile-App-UI-Smart-Productivity-Experience) from [Dribbble](dribbble.com), i tried to imitate it but obvi couldnt since its just so complex w tailwind
 
 but regardless of the fact tht i was trying to imitate the desg ref ive coded the whole UI by myself
 
 <img width="752" height="564" alt="dea6b6674a71e354f1e8bd2cbfe9c99e" src="https://github.com/user-attachments/assets/d05d518c-8647-40b1-990c-a78df8ab3418" />
-
-
 
 
 
